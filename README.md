@@ -28,6 +28,12 @@ sudo curl -Lo /usr/local/bin/sshcd http://git.io/wfAXEQ
 sudo chmod +x /usr/local/bin/sshcd
 ```
 
+Inherit completions from `ssh`:
+
+```sh
+compdef sshcd=ssh
+```
+
 ## Usage
 
 The default usage is pretty simple.

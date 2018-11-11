@@ -9,6 +9,12 @@ if [ ! "${usertest/@/}" = "${usertest}" ]; then # user is included in the target
     target="${target#*@}"                       # Strip out user
 fi
 
+# Get default path from ssh config file defined as SendEnv WorkingDirectory:path, e.g.
+#
+#  SendEnv WorkingDirectory:/data/www/my-site/htdocs
+#
+default_path=$(ssh -G "$target" | grep -i "WorkingDirectory:" | cut -d: -f2)
+
 # Get hostname and path
 if [ "${target::1}" = "[" ]; then               # Syntax:  [user@]\[hostname\]:path
     remote="${target%\]*}]"
@@ -21,7 +27,11 @@ else                                            # Syntax:  [user@]hostname:path
     remote="${target%%:*}"
     path="${target#*:}"
     if [ "${path}" = "${target}" ]; then
+      if [ -z "${default_path}" ]; then
 	exec ssh "$@"
+      else
+        path=$default_path
+      fi
     fi
 fi
 
